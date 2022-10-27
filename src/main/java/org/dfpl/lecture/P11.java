@@ -1,0 +1,25 @@
+package org.dfpl.lecture;
+
+
+import org.json.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.sql.SQLOutput;
+
+public class P11 {
+    public static void main(String[] args) throws Exception {
+        BufferedReader r = new BufferedReader(new FileReader("C:\\Users\\Jo\\DatabaseProgramming\\src\\main\\java\\org\\dfpl\\lecture\\data\\depositor.json"));
+
+        String str = "";
+
+        while(true){
+            String line = r.readLine();
+            if(line == null) break;
+            str += line;
+        }
+
+        JSONArray jsonArray = new JSONArray(str);
+    }
+}
