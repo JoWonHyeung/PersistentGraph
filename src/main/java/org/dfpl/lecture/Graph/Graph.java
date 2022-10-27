@@ -28,7 +28,7 @@ public interface Graph {
 	 *
 	 * @param id the identifier of the vertex to retrieved from the graph
 	 * @return the vertex referenced by the provided identifier or null when no such
-	 *         vertex exists
+	 * vertex exists
 	 */
 	public Vertex getVertex(String id);
 

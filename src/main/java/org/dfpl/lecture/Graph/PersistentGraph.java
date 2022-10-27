@@ -1,9 +1,6 @@
 package org.dfpl.lecture.Graph;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Collection;
 
 public class PersistentGraph implements Graph {
@@ -36,7 +33,7 @@ public class PersistentGraph implements Graph {
 
         /* Insert into */
         stmt.executeUpdate("INSERT INTO " + tableName + " VALUES('" +
-                this  + "'," + //graph
+                this.toString() + "'," + //graph
                 Boolean.TRUE + ",'" + //vertex
                 id + "'," +
                 Boolean.FALSE + "," + //edge
@@ -47,7 +44,17 @@ public class PersistentGraph implements Graph {
     }
 
     @Override
-    public Vertex getVertex(String id) {
+    public Vertex getVertex(String id) throws IllegalArgumentException {
+        try {
+            ResultSet rs = stmt.executeQuery("SELECT v_id FROM " + tableName +
+                    " WHERE g = '" + this + "' AND v_id = '" + id + "';");
+
+            rs.next();
+            PersistentVertex vertex = new PersistentVertex(this, rs.getString(1));
+            return vertex;
+        }catch(Exception e){
+
+        }
         return null;
     }
 
