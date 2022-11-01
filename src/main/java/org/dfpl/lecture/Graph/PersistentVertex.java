@@ -1,13 +1,12 @@
 package org.dfpl.lecture.Graph;
 
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.Set;
 
 public class PersistentVertex implements Vertex {
-
     private String id;
     private Graph graph;
-
 
     public PersistentVertex(Graph graph, String id) {
         this.id = id;
@@ -43,6 +42,7 @@ public class PersistentVertex implements Vertex {
     public Collection<Edge> getEdges(Direction direction, String... labels) throws IllegalArgumentException {
         return null;
     }
+
 
     @Override
     public Collection<Vertex> getVertices(Direction direction, String... labels) throws IllegalArgumentException {
