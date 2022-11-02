@@ -1,6 +1,7 @@
 package org.dfpl.lecture.Graph;
 
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.Set;
@@ -14,14 +15,13 @@ public class PersistentEdge implements Edge {
     String label;
     String id;
 
-    public PersistentEdge(Graph graph, Vertex outv,String label,Vertex inv) {
+    public PersistentEdge(Graph graph, Vertex outv,String label,Vertex inv,Statement stmt) throws Exception{
         this.graph = graph;
         this.outv = outv;
         this.inv = inv;
         this.label = label;
+        this.stmt = stmt;
         this.id = getEdgeId(outv, label, inv);
-
-        //connection = DriverManager.getConnection("jdbc:mariadb://localhost:" + port, user_id, user_pwd)
     }
 
     @Override
@@ -42,7 +42,10 @@ public class PersistentEdge implements Edge {
 
     @Override
     public void remove() {
-
+        try{
+            String query = "DELETE FROM e WHERE id = '" + id + "' AND g = '" + graph + "';";
+            stmt.executeUpdate(query);
+        }catch (Exception e){}
     }
 
     @Override

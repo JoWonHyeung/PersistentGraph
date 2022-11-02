@@ -16,6 +16,7 @@ public class PersistentGraph implements Graph {
     private Statement stmt;
     private String user_id;
     private String user_pwd;
+    private String dbName;
 
     public PersistentGraph(String user_id, String user_pwd, String dbName, String port) throws SQLException {
         this.user_id = user_id;
@@ -41,7 +42,7 @@ public class PersistentGraph implements Graph {
     public Vertex addVertex(String id) throws IllegalArgumentException {
         try{
             stmt.executeUpdate("INSERT INTO v VALUES ('" + this + "','" + id +"');");
-            return new PersistentVertex(this,id);
+            return new PersistentVertex(this,id,stmt);
         }catch (Exception e){ }
         return null;
     }
@@ -52,7 +53,7 @@ public class PersistentGraph implements Graph {
             String query = "SELECT id FROM v WHERE g = '" + this + "' AND id = '" + id + "'" ;
             ResultSet rs = stmt.executeQuery(query); rs.next();
             if(rs.getString(1) == null) return null;
-            return new PersistentVertex(this,rs.getString(1));
+            return new PersistentVertex(this,rs.getString(1),stmt);
         }catch (Exception e){}
         return null;
     }
@@ -75,7 +76,7 @@ public class PersistentGraph implements Graph {
             ArrayList<Vertex> arrayList = new ArrayList<>();
             String query = "SELECT id FROM v WHERE g = '" + this +"';";
             ResultSet rs = stmt.executeQuery(query);
-            while(rs.next()){ arrayList.add(new PersistentVertex(this, rs.getString(1))); }
+            while(rs.next()){ arrayList.add(new PersistentVertex(this, rs.getString(1),stmt)); }
             return arrayList;
         }catch (Exception e){}
         return null;
@@ -98,7 +99,7 @@ public class PersistentGraph implements Graph {
                     label + "','" +
                     edge +
                     "');");
-            return new PersistentEdge(this,outVertex,label,inVertex);
+            return new PersistentEdge(this,outVertex,label,inVertex,stmt);
         }catch (Exception e){}
         return null;
     }
@@ -113,7 +114,7 @@ public class PersistentGraph implements Graph {
                     "';" ;
             ResultSet rs = stmt.executeQuery(query); rs.next();
             if(rs.getString(1) == null) return null;
-            return new PersistentEdge(this,outVertex,label,inVertex);
+            return new PersistentEdge(this,outVertex,label,inVertex,stmt);
         }catch (Exception e){}
         return null;
     }
@@ -126,9 +127,10 @@ public class PersistentGraph implements Graph {
             if(rs.getString(1) == null) return null;
             String o = rs.getString(1); String i = rs.getString(2); String label = rs.getString(3);
             return new PersistentEdge(this,
-                    new PersistentVertex(this,o),
+                    new PersistentVertex(this,o,stmt),
                     label,
-                    new PersistentVertex(this,i));
+                    new PersistentVertex(this,i,stmt),
+                    stmt);
         }catch (Exception e){}
         return null;
     }
@@ -151,10 +153,10 @@ public class PersistentGraph implements Graph {
             String query = "SELECT * FROM e WHERE g = '" + this + "';";
             ResultSet rs = stmt.executeQuery(query);
             while(rs.next()){
-                PersistentVertex outv = new PersistentVertex(this,rs.getString(2));
-                PersistentVertex inv = new PersistentVertex(this,rs.getString(3));
+                PersistentVertex outv = new PersistentVertex(this,rs.getString(2),stmt);
+                PersistentVertex inv = new PersistentVertex(this,rs.getString(3),stmt);
                 String label = rs.getString(4);
-                PersistentEdge edge = new PersistentEdge(this,outv,label,inv);
+                PersistentEdge edge = new PersistentEdge(this,outv,label,inv,stmt);
                 arrayList.add(edge);
             }
             return arrayList;

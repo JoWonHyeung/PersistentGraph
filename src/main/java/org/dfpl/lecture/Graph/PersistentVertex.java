@@ -1,16 +1,20 @@
 package org.dfpl.lecture.Graph;
 
+import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
 public class PersistentVertex implements Vertex {
     private String id;
     private Graph graph;
+    private Statement stmt;
 
-    public PersistentVertex(Graph graph, String id) {
+    public PersistentVertex(Graph graph, String id, Statement stmt) {
         this.id = id;
         this.graph = graph;
+        this.stmt = stmt;
     }
 
     @Override
@@ -46,6 +50,44 @@ public class PersistentVertex implements Vertex {
 
     @Override
     public Collection<Vertex> getVertices(Direction direction, String... labels) throws IllegalArgumentException {
+        try {
+            ArrayList<Vertex> arrayList = new ArrayList<>();
+            if (direction.equals(Direction.OUT)) {
+                if (labels.length != 0) {
+                    for(String label: labels){
+                        String query = "SELECT i FROM e WHERE label = '" + label + "' AND o = '" + id +"';";
+                        ResultSet rs = stmt.executeQuery(query);
+                        while(rs.next()){
+                            arrayList.add(new PersistentVertex(graph,rs.getString(1),stmt));
+                        }
+                    }
+                    return arrayList;
+                }
+                String query = "SELECT i FROM e WHERE o = '" + id + "';";
+                ResultSet rs = stmt.executeQuery(query);
+                while (rs.next()) {
+                    arrayList.add(new PersistentVertex(graph, rs.getString(1), stmt));
+                }
+                return arrayList;
+            } else if (direction.equals(Direction.IN)) {
+                if (labels.length != 0) {
+                    for(String label: labels){
+                        String query = "SELECT o FROM e WHERE label = '" + label + "' AND i = '" + id +"';";
+                        ResultSet rs = stmt.executeQuery(query);
+                        while(rs.next()){
+                            arrayList.add(new PersistentVertex(graph,rs.getString(1),stmt));
+                        }
+                    }
+                    return arrayList;
+                }
+                String query = "SELECT o FROM e WHERE i = '" + id + "';";
+                ResultSet rs = stmt.executeQuery(query);
+                while (rs.next()) {
+                    arrayList.add(new PersistentVertex(graph, rs.getString(1), stmt));
+                }
+                return arrayList;
+            }
+        } catch (Exception e) {}
         return null;
     }
 
@@ -56,9 +98,22 @@ public class PersistentVertex implements Vertex {
 
     @Override
     public void remove() {
+        try {
+            /* vertex delete */
+            String query = "DELETE FROM v WHERE id = '" + id + "' AND g = '" + graph + "';";
+            System.out.println(query);
+            stmt.executeUpdate(query);
 
+            /* edge delete */
+            query = "DELETE FROM e WHERE (o = '" + id + "' OR i = '" + id + "') AND g = '" + graph + "';";
+            System.out.println(query);
+            stmt.executeUpdate(query);
+        } catch (Exception e) {
+        }
     }
 
     @Override
-    public String toString(){ return id; }
+    public String toString() {
+        return id;
+    }
 }
