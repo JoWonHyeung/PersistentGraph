@@ -92,6 +92,8 @@ public class GraphTest {
         System.out.println("[vertex getVertices test2]");
         System.out.println(v2.getVertices(Direction.IN,"loves"));
 
-
+        /* Vertex getEdges */
+        System.out.println("[vertex getEdges test]");
+        System.out.println((v1.getEdges(Direction.OUT,"likes")));
     }
 }

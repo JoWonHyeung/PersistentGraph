@@ -30,8 +30,6 @@ public class PersistentGraph implements Graph {
         /* Use database */
         stmt.executeUpdate("USE " + dbName);
         /* table create*/
-        stmt.executeUpdate("CREATE OR REPLACE TABLE g(g VARCHAR(50));");
-        stmt.executeUpdate("INSERT INTO g VALUES('" + this + "');");
 
         stmt.executeUpdate("CREATE OR REPLACE TABLE e(g VARCHAR(50),o VARCHAR(10),i VARCHAR(10),label VARCHAR(50),id VARCHAR(70));");
         stmt.executeUpdate("CREATE OR REPLACE TABLE v(g VARCHAR(50),id VARCHAR(50));");

@@ -44,6 +44,60 @@ public class PersistentVertex implements Vertex {
 
     @Override
     public Collection<Edge> getEdges(Direction direction, String... labels) throws IllegalArgumentException {
+        try {
+            ArrayList<Edge> arrayList = new ArrayList<>();
+            if (direction.equals(Direction.OUT)) {
+                if (labels.length != 0) {
+                    for (String label : labels) {
+                        String query = "SELECT o, i FROM e WHERE label = '" + label + "' AND o = '" + id + "';";
+                        ResultSet rs = stmt.executeQuery(query);
+                        while (rs.next()) {
+                            arrayList.add(new PersistentEdge(graph,
+                                    new PersistentVertex(graph, rs.getString(1), stmt),
+                                    label,
+                                    new PersistentVertex(graph, rs.getString(2), stmt),
+                                    stmt));
+                        }
+                    }
+                    return arrayList;
+                }
+                String query = "SELECT o, i, label FROM e WHERE o = '" + id + "';";
+                ResultSet rs = stmt.executeQuery(query);
+                while (rs.next()) {
+                    arrayList.add(new PersistentEdge(graph,
+                            new PersistentVertex(graph, rs.getString(1), stmt),
+                            rs.getString(3),
+                            new PersistentVertex(graph, rs.getString(2), stmt),
+                            stmt));
+                }
+                return arrayList;
+            } else if (direction.equals(Direction.IN)) {
+                if (labels.length != 0) {
+                    for (String label : labels) {
+                        String query = "SELECT o, i FROM e WHERE label = '" + label + "' AND i = '" + id + "';";
+                        ResultSet rs = stmt.executeQuery(query);
+                        while (rs.next()) {
+                            arrayList.add(new PersistentEdge(graph,
+                                    new PersistentVertex(graph, rs.getString(1), stmt),
+                                    label,
+                                    new PersistentVertex(graph, rs.getString(2), stmt),
+                                    stmt));
+                        }
+                    }
+                    return arrayList;
+                }
+                String query = "SELECT o, i, label FROM e WHERE i = '" + id + "';";
+                ResultSet rs = stmt.executeQuery(query);
+                while (rs.next()) {
+                    arrayList.add(new PersistentEdge(graph,
+                            new PersistentVertex(graph, rs.getString(1), stmt),
+                            rs.getString(3),
+                            new PersistentVertex(graph, rs.getString(2), stmt),
+                            stmt));
+                }
+                return arrayList;
+            }
+        } catch (Exception e) {}
         return null;
     }
 
@@ -54,11 +108,11 @@ public class PersistentVertex implements Vertex {
             ArrayList<Vertex> arrayList = new ArrayList<>();
             if (direction.equals(Direction.OUT)) {
                 if (labels.length != 0) {
-                    for(String label: labels){
-                        String query = "SELECT i FROM e WHERE label = '" + label + "' AND o = '" + id +"';";
+                    for (String label : labels) {
+                        String query = "SELECT i FROM e WHERE label = '" + label + "' AND o = '" + id + "';";
                         ResultSet rs = stmt.executeQuery(query);
-                        while(rs.next()){
-                            arrayList.add(new PersistentVertex(graph,rs.getString(1),stmt));
+                        while (rs.next()) {
+                            arrayList.add(new PersistentVertex(graph, rs.getString(1), stmt));
                         }
                     }
                     return arrayList;
@@ -71,11 +125,11 @@ public class PersistentVertex implements Vertex {
                 return arrayList;
             } else if (direction.equals(Direction.IN)) {
                 if (labels.length != 0) {
-                    for(String label: labels){
-                        String query = "SELECT o FROM e WHERE label = '" + label + "' AND i = '" + id +"';";
+                    for (String label : labels) {
+                        String query = "SELECT o FROM e WHERE label = '" + label + "' AND i = '" + id + "';";
                         ResultSet rs = stmt.executeQuery(query);
-                        while(rs.next()){
-                            arrayList.add(new PersistentVertex(graph,rs.getString(1),stmt));
+                        while (rs.next()) {
+                            arrayList.add(new PersistentVertex(graph, rs.getString(1), stmt));
                         }
                     }
                     return arrayList;
@@ -87,7 +141,8 @@ public class PersistentVertex implements Vertex {
                 }
                 return arrayList;
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         return null;
     }
 
