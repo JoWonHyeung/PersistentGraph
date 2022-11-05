@@ -1,9 +1,14 @@
 package org.dfpl.lecture.Graph;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 
 public class PersistentVertex implements Vertex {
@@ -34,7 +39,23 @@ public class PersistentVertex implements Vertex {
 
     @Override
     public void setProperty(String key, Object value) {
-
+        try {
+            ResultSet rs = stmt.executeQuery("SELECT properties FROM v WHERE id = '" + id + "'"); rs.next();
+            String jsonValue = rs.getString(1);
+            if(jsonValue.equals("null")){
+                stmt.executeUpdate("UPDATE v SET properties = '" +
+                        new JSONObject().put(key, value) + "' " + "WHERE id = '" + id + "'");
+            }else{
+                /* key 값 중복 check */
+                JSONObject jsonObject = new JSONObject(jsonValue);
+                if(jsonObject.keySet().contains(key)) return;
+                /* table update */
+                stmt.executeUpdate("UPDATE v SET properties = '" +
+                        jsonObject.put(key, value) + "' " + "WHERE id = '" + id + "'");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
@@ -97,7 +118,8 @@ public class PersistentVertex implements Vertex {
                 }
                 return arrayList;
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         return null;
     }
 

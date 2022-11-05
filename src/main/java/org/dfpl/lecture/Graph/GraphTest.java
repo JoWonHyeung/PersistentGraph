@@ -95,5 +95,19 @@ public class GraphTest {
         /* Vertex getEdges */
         System.out.println("[vertex getEdges test]");
         System.out.println((v1.getEdges(Direction.OUT,"likes")));
+
+        /* Edge setProperties */
+        System.out.println("[edge setProperties test]");
+        e1.setProperty("name","jo");
+
+        /* Edge setProperties */
+        System.out.println("[edge setProperties test]");
+        e1.setProperty("name","jo");
+
+        /* Vertex setProperties */
+        System.out.println("[vertex setProperties test]");
+        v1.setProperty("name","jo");
+        v1.setProperty("name2","jo2");
+        v1.setProperty("name3","jo2");
     }
 }

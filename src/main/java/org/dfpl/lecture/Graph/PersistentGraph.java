@@ -31,15 +31,15 @@ public class PersistentGraph implements Graph {
         stmt.executeUpdate("USE " + dbName);
         /* table create*/
 
-        stmt.executeUpdate("CREATE OR REPLACE TABLE e(g VARCHAR(50),o VARCHAR(10),i VARCHAR(10),label VARCHAR(50),id VARCHAR(70));");
-        stmt.executeUpdate("CREATE OR REPLACE TABLE v(g VARCHAR(50),id VARCHAR(50));");
+        stmt.executeUpdate("CREATE OR REPLACE TABLE e(g VARCHAR(50),o VARCHAR(10),i VARCHAR(10),label VARCHAR(50),id VARCHAR(70),properties JSON);");
+        stmt.executeUpdate("CREATE OR REPLACE TABLE v(g VARCHAR(50),id VARCHAR(50),properties JSON);");
     }
 
 
     @Override
     public Vertex addVertex(String id) throws IllegalArgumentException {
         try{
-            stmt.executeUpdate("INSERT INTO v VALUES ('" + this + "','" + id +"');");
+            stmt.executeUpdate("INSERT INTO v VALUES ('" + this + "','" + id +"','" + null + "');");
             return new PersistentVertex(this,id,stmt);
         }catch (Exception e){ }
         return null;
@@ -95,7 +95,8 @@ public class PersistentGraph implements Graph {
                     outVertex.getId() + "','" +
                     inVertex.getId() + "','" +
                     label + "','" +
-                    edge +
+                    edge + "','" +
+                    null +
                     "');");
             return new PersistentEdge(this,outVertex,label,inVertex,stmt);
         }catch (Exception e){}
