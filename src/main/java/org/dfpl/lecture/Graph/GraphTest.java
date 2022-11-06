@@ -109,5 +109,15 @@ public class GraphTest {
         v1.setProperty("name","jo");
         v1.setProperty("name2","jo2");
         v1.setProperty("name3","jo2");
+
+        /* Vertex getProperties */
+        System.out.println("[vertex getProperties test]");
+        System.out.println(v1.getProperty("name"));
+
+        /* Vertex getProperties */
+        System.out.println("[vertex getPropertyKeys test]");
+        System.out.println(v1.getPropertyKeys());
+        System.out.println(v2.getPropertyKeys());
+
     }
 }

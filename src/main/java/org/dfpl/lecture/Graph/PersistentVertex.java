@@ -6,10 +6,7 @@ import org.json.JSONObject;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class PersistentVertex implements Vertex {
     private String id;
@@ -29,26 +26,47 @@ public class PersistentVertex implements Vertex {
 
     @Override
     public Object getProperty(String key) {
+        try {
+            String json_path = "$." + key;
+            String query = "SELECT JSON_VALUE(properties,'" + json_path + "') FROM v WHERE id = '" + id + "';";
+            ResultSet rs = stmt.executeQuery(query);
+            rs.next();
+            return rs.getObject(1);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
         return null;
     }
 
     @Override
     public Set<String> getPropertyKeys() {
+        try {
+            String query = "SELECT JSON_KEYS(properties) FROM v WHERE id = '" + id + "';";
+            ResultSet rs = stmt.executeQuery(query); rs.next();
+            if(rs.getString(1) == null) return null;
+            JSONArray jsonArray = new JSONArray(rs.getString(1));
+            Set<String> keys = new HashSet<>();
+            jsonArray.forEach(e -> keys.add(e.toString()));
+            return keys;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
         return null;
     }
 
     @Override
     public void setProperty(String key, Object value) {
         try {
-            ResultSet rs = stmt.executeQuery("SELECT properties FROM v WHERE id = '" + id + "'"); rs.next();
+            ResultSet rs = stmt.executeQuery("SELECT properties FROM v WHERE id = '" + id + "'");
+            rs.next();
             String jsonValue = rs.getString(1);
-            if(jsonValue.equals("null")){
+            if (jsonValue.equals("null")) {
                 stmt.executeUpdate("UPDATE v SET properties = '" +
                         new JSONObject().put(key, value) + "' " + "WHERE id = '" + id + "'");
-            }else{
+            } else {
                 /* key 값 중복 check */
                 JSONObject jsonObject = new JSONObject(jsonValue);
-                if(jsonObject.keySet().contains(key)) return;
+                if (jsonObject.keySet().contains(key)) return;
                 /* table update */
                 stmt.executeUpdate("UPDATE v SET properties = '" +
                         jsonObject.put(key, value) + "' " + "WHERE id = '" + id + "'");
