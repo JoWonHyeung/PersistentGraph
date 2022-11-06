@@ -119,5 +119,9 @@ public class GraphTest {
         System.out.println(v1.getPropertyKeys());
         System.out.println(v2.getPropertyKeys());
 
+        /* Vertex removeProperties */
+        System.out.println("[vertex removeProperties test]");
+        System.out.println(v1.removeProperty("name3"));
+
     }
 }

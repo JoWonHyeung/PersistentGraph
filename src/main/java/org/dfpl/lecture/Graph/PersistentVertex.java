@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
@@ -29,8 +30,7 @@ public class PersistentVertex implements Vertex {
         try {
             String json_path = "$." + key;
             String query = "SELECT JSON_VALUE(properties,'" + json_path + "') FROM v WHERE id = '" + id + "';";
-            ResultSet rs = stmt.executeQuery(query);
-            rs.next();
+            ResultSet rs = stmt.executeQuery(query); rs.next();
             return rs.getObject(1);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -57,8 +57,7 @@ public class PersistentVertex implements Vertex {
     @Override
     public void setProperty(String key, Object value) {
         try {
-            ResultSet rs = stmt.executeQuery("SELECT properties FROM v WHERE id = '" + id + "'");
-            rs.next();
+            ResultSet rs = stmt.executeQuery("SELECT properties FROM v WHERE id = '" + id + "'"); rs.next();
             String jsonValue = rs.getString(1);
             if (jsonValue.equals("null")) {
                 stmt.executeUpdate("UPDATE v SET properties = '" +
@@ -78,6 +77,19 @@ public class PersistentVertex implements Vertex {
 
     @Override
     public Object removeProperty(String key) {
+        try{
+            String json_path = "$." + key;
+            String query = "SELECT JSON_VALUE(properties,'" + json_path + "') FROM v WHERE id = '" + id + "';";
+            ResultSet rs = stmt.executeQuery(query); rs.next();
+            if(rs.getString(1) == "null") return null;
+            JSONObject result = new JSONObject().put(key,rs.getString(1));
+            query = "SELECT JSON_REMOVE(properties,'" + json_path + "') FROM v WHERE id = '" + id + "';";
+            rs = stmt.executeQuery(query); rs.next();
+            stmt.executeUpdate("UPDATE v SET properties = '" + rs.getObject(1) + "' WHERE id = '"+ id +"';");
+            return result;
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
         return null;
     }
 
@@ -140,7 +152,6 @@ public class PersistentVertex implements Vertex {
         }
         return null;
     }
-
 
     @Override
     public Collection<Vertex> getVertices(Direction direction, String... labels) throws IllegalArgumentException {
