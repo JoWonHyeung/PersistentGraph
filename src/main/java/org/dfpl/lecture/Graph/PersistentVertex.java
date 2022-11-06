@@ -81,7 +81,7 @@ public class PersistentVertex implements Vertex {
             String json_path = "$." + key;
             String query = "SELECT JSON_VALUE(properties,'" + json_path + "') FROM v WHERE id = '" + id + "';";
             ResultSet rs = stmt.executeQuery(query); rs.next();
-            if(rs.getString(1) == "null") return null;
+            if(rs.getString(1) == null) return null;
             JSONObject result = new JSONObject().put(key,rs.getString(1));
             query = "SELECT JSON_REMOVE(properties,'" + json_path + "') FROM v WHERE id = '" + id + "';";
             rs = stmt.executeQuery(query); rs.next();

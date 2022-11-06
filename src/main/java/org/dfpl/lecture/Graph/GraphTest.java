@@ -121,7 +121,6 @@ public class GraphTest {
 
         /* Vertex removeProperties */
         System.out.println("[vertex removeProperties test]");
-        System.out.println(v1.removeProperty("name3"));
-
+        System.out.println(v1.removeProperty("name4"));
     }
 }
