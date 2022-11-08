@@ -47,9 +47,9 @@ public class GraphTest {
 
         /* addEdge test */
         System.out.println("[addEdge test]");
-        Edge e1 = g1.addEdge(v1_get, v2_get, "loves");
-        Edge e2 = g1.addEdge(v1_get, v3_get, "likes");
-        Edge e3 = g1.addEdge(v1_get, v4_get, "likes");
+        Edge e1 = g1.addEdge(v2_get, v1_get, "loves");
+        Edge e2 = g1.addEdge(v3_get, v1_get, "likes");
+        Edge e3 = g1.addEdge(v4_get, v1_get, "likes");
         System.out.println(e1);
         System.out.println(e2);
         System.out.println(e3);
@@ -107,12 +107,12 @@ public class GraphTest {
         /* Vertex setProperties */
         System.out.println("[vertex setProperties test]");
         v1.setProperty("name","jo");
-        v1.setProperty("name2","jo2");
-        v1.setProperty("name3","jo2");
+        v2.setProperty("name","kim");
 
         /* Vertex getProperties */
         System.out.println("[vertex getProperties test]");
         System.out.println(v1.getProperty("name"));
+
 
         /* Vertex getProperties */
         System.out.println("[vertex getPropertyKeys test]");
@@ -122,5 +122,24 @@ public class GraphTest {
         /* Vertex removeProperties */
         System.out.println("[vertex removeProperties test]");
         System.out.println(v1.removeProperty("name4"));
+
+        /* Edge setProperties */
+        System.out.println("[edge setProperties test]");
+        e1.setProperty("name","jo");
+        e1.setProperty("age","13");
+
+        /* Edge getProperties */
+        System.out.println("[edge setProperty test]");
+        System.out.println(e1.getProperty("age"));
+
+        /* Edge getProperties */
+        System.out.println("[edge getPropertyKeys test]");
+        System.out.println(e1.getPropertyKeys());
+
+        /* Edge removeProperty -> 다시 null이 되었을 때, null을 다시 넣을 것 인가? */
+        System.out.println("[edge removeProperty test]");
+        System.out.println(e1.removeProperty("name"));
+        System.out.println(e1.removeProperty("age"));
+
     }
 }

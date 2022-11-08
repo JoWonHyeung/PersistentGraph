@@ -11,12 +11,10 @@ import java.util.*;
 
 public class PersistentVertex implements Vertex {
     private String id;
-    private Graph graph;
     private Statement stmt;
 
-    public PersistentVertex(Graph graph, String id, Statement stmt) {
+    public PersistentVertex(String id, Statement stmt) {
         this.id = id;
-        this.graph = graph;
         this.stmt = stmt;
     }
 
@@ -31,7 +29,16 @@ public class PersistentVertex implements Vertex {
             String json_path = "$." + key;
             String query = "SELECT JSON_VALUE(properties,'" + json_path + "') FROM v WHERE id = '" + id + "';";
             ResultSet rs = stmt.executeQuery(query); rs.next();
-            return rs.getObject(1);
+            /* type check */
+            if(isInt(rs.getString(1))){
+                return Integer.parseInt(rs.getString(1));
+            }else if(isBoolean(rs.getString(1))){
+                return Boolean.parseBoolean(rs.getString(1));
+            }else if(isDouble(rs.getString(1))){
+                return Double.parseDouble(rs.getString(1));
+            }else{
+                return rs.getString(1);
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -43,7 +50,7 @@ public class PersistentVertex implements Vertex {
         try {
             String query = "SELECT JSON_KEYS(properties) FROM v WHERE id = '" + id + "';";
             ResultSet rs = stmt.executeQuery(query); rs.next();
-            if(rs.getString(1) == null) return null;
+            if (rs.getString(1) == null) return null;
             JSONArray jsonArray = new JSONArray(rs.getString(1));
             Set<String> keys = new HashSet<>();
             jsonArray.forEach(e -> keys.add(e.toString()));
@@ -61,14 +68,14 @@ public class PersistentVertex implements Vertex {
             String jsonValue = rs.getString(1);
             if (jsonValue.equals("null")) {
                 stmt.executeUpdate("UPDATE v SET properties = '" +
-                        new JSONObject().put(key, value) + "' " + "WHERE id = '" + id + "'");
+                        new JSONObject().put(key, value.toString()) + "' " + "WHERE id = '" + id + "'");
             } else {
                 /* key 값 중복 check */
                 JSONObject jsonObject = new JSONObject(jsonValue);
                 if (jsonObject.keySet().contains(key)) return;
                 /* table update */
                 stmt.executeUpdate("UPDATE v SET properties = '" +
-                        jsonObject.put(key, value) + "' " + "WHERE id = '" + id + "'");
+                        jsonObject.put(key, value.toString()) + "' " + "WHERE id = '" + id + "'");
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -77,17 +84,18 @@ public class PersistentVertex implements Vertex {
 
     @Override
     public Object removeProperty(String key) {
-        try{
+        try {
             String json_path = "$." + key;
             String query = "SELECT JSON_VALUE(properties,'" + json_path + "') FROM v WHERE id = '" + id + "';";
             ResultSet rs = stmt.executeQuery(query); rs.next();
-            if(rs.getString(1) == null) return null;
-            JSONObject result = new JSONObject().put(key,rs.getString(1));
+            if (rs.getString(1) == null) return null;
+            JSONObject result = new JSONObject().put(key, rs.getString(1));
             query = "SELECT JSON_REMOVE(properties,'" + json_path + "') FROM v WHERE id = '" + id + "';";
-            rs = stmt.executeQuery(query); rs.next();
-            stmt.executeUpdate("UPDATE v SET properties = '" + rs.getObject(1) + "' WHERE id = '"+ id +"';");
+            rs = stmt.executeQuery(query);
+            rs.next();
+            stmt.executeUpdate("UPDATE v SET properties = '" + rs.getObject(1) + "' WHERE id = '" + id + "';");
             return result;
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return null;
@@ -103,10 +111,10 @@ public class PersistentVertex implements Vertex {
                         String query = "SELECT o, i FROM e WHERE label = '" + label + "' AND o = '" + id + "';";
                         ResultSet rs = stmt.executeQuery(query);
                         while (rs.next()) {
-                            arrayList.add(new PersistentEdge(graph,
-                                    new PersistentVertex(graph, rs.getString(1), stmt),
+                            arrayList.add(new PersistentEdge(
+                                    new PersistentVertex(rs.getString(1), stmt),
                                     label,
-                                    new PersistentVertex(graph, rs.getString(2), stmt),
+                                    new PersistentVertex(rs.getString(2), stmt),
                                     stmt));
                         }
                     }
@@ -115,10 +123,10 @@ public class PersistentVertex implements Vertex {
                 String query = "SELECT o, i, label FROM e WHERE o = '" + id + "';";
                 ResultSet rs = stmt.executeQuery(query);
                 while (rs.next()) {
-                    arrayList.add(new PersistentEdge(graph,
-                            new PersistentVertex(graph, rs.getString(1), stmt),
+                    arrayList.add(new PersistentEdge(
+                            new PersistentVertex(rs.getString(1), stmt),
                             rs.getString(3),
-                            new PersistentVertex(graph, rs.getString(2), stmt),
+                            new PersistentVertex(rs.getString(2), stmt),
                             stmt));
                 }
                 return arrayList;
@@ -128,10 +136,10 @@ public class PersistentVertex implements Vertex {
                         String query = "SELECT o, i FROM e WHERE label = '" + label + "' AND i = '" + id + "';";
                         ResultSet rs = stmt.executeQuery(query);
                         while (rs.next()) {
-                            arrayList.add(new PersistentEdge(graph,
-                                    new PersistentVertex(graph, rs.getString(1), stmt),
+                            arrayList.add(new PersistentEdge(
+                                    new PersistentVertex(rs.getString(1), stmt),
                                     label,
-                                    new PersistentVertex(graph, rs.getString(2), stmt),
+                                    new PersistentVertex(rs.getString(2), stmt),
                                     stmt));
                         }
                     }
@@ -140,15 +148,16 @@ public class PersistentVertex implements Vertex {
                 String query = "SELECT o, i, label FROM e WHERE i = '" + id + "';";
                 ResultSet rs = stmt.executeQuery(query);
                 while (rs.next()) {
-                    arrayList.add(new PersistentEdge(graph,
-                            new PersistentVertex(graph, rs.getString(1), stmt),
+                    arrayList.add(new PersistentEdge(
+                            new PersistentVertex(rs.getString(1), stmt),
                             rs.getString(3),
-                            new PersistentVertex(graph, rs.getString(2), stmt),
+                            new PersistentVertex(rs.getString(2), stmt),
                             stmt));
                 }
                 return arrayList;
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         return null;
     }
@@ -163,7 +172,7 @@ public class PersistentVertex implements Vertex {
                         String query = "SELECT i FROM e WHERE label = '" + label + "' AND o = '" + id + "';";
                         ResultSet rs = stmt.executeQuery(query);
                         while (rs.next()) {
-                            arrayList.add(new PersistentVertex(graph, rs.getString(1), stmt));
+                            arrayList.add(new PersistentVertex(rs.getString(1), stmt));
                         }
                     }
                     return arrayList;
@@ -171,7 +180,7 @@ public class PersistentVertex implements Vertex {
                 String query = "SELECT i FROM e WHERE o = '" + id + "';";
                 ResultSet rs = stmt.executeQuery(query);
                 while (rs.next()) {
-                    arrayList.add(new PersistentVertex(graph, rs.getString(1), stmt));
+                    arrayList.add(new PersistentVertex(rs.getString(1), stmt));
                 }
                 return arrayList;
             } else if (direction.equals(Direction.IN)) {
@@ -180,7 +189,7 @@ public class PersistentVertex implements Vertex {
                         String query = "SELECT o FROM e WHERE label = '" + label + "' AND i = '" + id + "';";
                         ResultSet rs = stmt.executeQuery(query);
                         while (rs.next()) {
-                            arrayList.add(new PersistentVertex(graph, rs.getString(1), stmt));
+                            arrayList.add(new PersistentVertex(rs.getString(1), stmt));
                         }
                     }
                     return arrayList;
@@ -188,9 +197,11 @@ public class PersistentVertex implements Vertex {
                 String query = "SELECT o FROM e WHERE i = '" + id + "';";
                 ResultSet rs = stmt.executeQuery(query);
                 while (rs.next()) {
-                    arrayList.add(new PersistentVertex(graph, rs.getString(1), stmt));
+                    arrayList.add(new PersistentVertex(rs.getString(1), stmt));
                 }
                 return arrayList;
+            } else if (direction.equals(Direction.BOTH)){
+
             }
         } catch (Exception e) {
         }
@@ -199,6 +210,33 @@ public class PersistentVertex implements Vertex {
 
     @Override
     public Collection<Vertex> getVertices(Direction direction, String key, Object value, String... labels) throws IllegalArgumentException {
+//        try {
+//            ArrayList<Vertex> arrayList = new ArrayList<>();
+//            if (direction.equals(Direction.OUT)) {
+//                for (String label : labels) {
+//                    /* key, value check */
+//                    JSONObject jsonObject = new JSONObject().put(key, value);
+//                    String query = "SELECT id FROM v WHERE id = (SELECT i FROM e WHERE label = '" + label + "' AND o = '" + id + "');";
+//                    ResultSet rs = stmt.executeQuery(query);
+//                    while (rs.next()) {
+//                        arrayList.add(new PersistentVertex(graph, rs.getString(1), stmt));
+//                    }
+//                }
+//                return arrayList;
+//            } else if (direction.equals(Direction.IN)) {
+//                for (String label : labels) {
+//                    /* key, value check */
+//                    JSONObject jsonObject = new JSONObject().put(key, value);
+//                    String query = "SELECT id FROM v WHERE id = (SELECT o FROM e WHERE label = '" + label + "' AND i = '" + id + "');";
+//                    ResultSet rs = stmt.executeQuery(query);
+//                    while (rs.next()) {
+//                        arrayList.add(new PersistentVertex(graph, rs.getString(1), stmt));
+//                    }
+//                }
+//                return arrayList;
+//            }
+//        } catch (Exception e) {
+//        }
         return null;
     }
 
@@ -206,15 +244,14 @@ public class PersistentVertex implements Vertex {
     public void remove() {
         try {
             /* vertex delete */
-            String query = "DELETE FROM v WHERE id = '" + id + "' AND g = '" + graph + "';";
-            System.out.println(query);
+            String query = "DELETE FROM v WHERE id = '" + id + "';";
             stmt.executeUpdate(query);
 
             /* edge delete */
-            query = "DELETE FROM e WHERE (o = '" + id + "' OR i = '" + id + "') AND g = '" + graph + "';";
-            System.out.println(query);
+            query = "DELETE FROM e WHERE (o = '" + id + "' OR i = '" + id + "');";
             stmt.executeUpdate(query);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -222,4 +259,43 @@ public class PersistentVertex implements Vertex {
     public String toString() {
         return id;
     }
+
+    public static boolean isInt(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            int d = Integer.parseInt(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean isBoolean(String strNum) {
+        if(Boolean.parseBoolean(strNum)) return Boolean.TRUE;
+        else return Boolean.FALSE;
+    }
+
+    public static boolean isDouble(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            Double d = Double.parseDouble(strNum);
+        } catch (Exception nfe) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this.id.equals(obj.toString())){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 }
