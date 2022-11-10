@@ -32,16 +32,17 @@ public class PersistentGraph implements Graph {
         /* table create*/
 
         stmt.executeUpdate("CREATE OR REPLACE TABLE e(o VARCHAR(10),i VARCHAR(10),label VARCHAR(50),id VARCHAR(70),properties JSON);");
-        stmt.executeUpdate("CREATE OR REPLACE TABLE v(id VARCHAR(50),properties JSON);");
+        stmt.executeUpdate("CREATE OR REPLACE TABLE v(id VARCHAR(50) UNIQUE,properties JSON);");
     }
-
 
     @Override
     public Vertex addVertex(String id) throws IllegalArgumentException {
         try{
-            stmt.executeUpdate("INSERT INTO v VALUES ('" + id +"','" + null + "');");
+            stmt.executeUpdate("INSERT IGNORE INTO v VALUES ('" + id +"','" + null + "');");
             return new PersistentVertex(id,stmt);
-        }catch (Exception e){ }
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
         return null;
     }
 
@@ -105,7 +106,7 @@ public class PersistentGraph implements Graph {
     public Edge addEdge(Vertex outVertex, Vertex inVertex, String label) throws IllegalArgumentException, NullPointerException {
         try{
             String edge = outVertex.getId() + label + inVertex.getId();
-            stmt.executeUpdate("INSERT INTO e VALUES ('" +
+            stmt.executeUpdate("INSERT IGNORE INTO e VALUES ('" +
                     outVertex.getId() + "','" +
                     inVertex.getId() + "','" +
                     label + "','" +

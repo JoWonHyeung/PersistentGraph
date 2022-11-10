@@ -155,11 +155,12 @@ public class PersistentVertex implements Vertex {
                             stmt));
                 }
                 return arrayList;
+            } else {
+                throw new IllegalArgumentException("Direction.BOTH is not allowed");
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            throw new IllegalArgumentException();
         }
-        return null;
     }
 
     @Override
@@ -200,8 +201,8 @@ public class PersistentVertex implements Vertex {
                     arrayList.add(new PersistentVertex(rs.getString(1), stmt));
                 }
                 return arrayList;
-            } else if (direction.equals(Direction.BOTH)){
-
+            } else {
+                throw new IllegalArgumentException("Direction.BOTH is not allowed");
             }
         } catch (Exception e) {
         }
@@ -210,33 +211,37 @@ public class PersistentVertex implements Vertex {
 
     @Override
     public Collection<Vertex> getVertices(Direction direction, String key, Object value, String... labels) throws IllegalArgumentException {
-//        try {
-//            ArrayList<Vertex> arrayList = new ArrayList<>();
-//            if (direction.equals(Direction.OUT)) {
-//                for (String label : labels) {
-//                    /* key, value check */
-//                    JSONObject jsonObject = new JSONObject().put(key, value);
-//                    String query = "SELECT id FROM v WHERE id = (SELECT i FROM e WHERE label = '" + label + "' AND o = '" + id + "');";
-//                    ResultSet rs = stmt.executeQuery(query);
-//                    while (rs.next()) {
-//                        arrayList.add(new PersistentVertex(graph, rs.getString(1), stmt));
-//                    }
-//                }
-//                return arrayList;
-//            } else if (direction.equals(Direction.IN)) {
-//                for (String label : labels) {
-//                    /* key, value check */
-//                    JSONObject jsonObject = new JSONObject().put(key, value);
-//                    String query = "SELECT id FROM v WHERE id = (SELECT o FROM e WHERE label = '" + label + "' AND i = '" + id + "');";
-//                    ResultSet rs = stmt.executeQuery(query);
-//                    while (rs.next()) {
-//                        arrayList.add(new PersistentVertex(graph, rs.getString(1), stmt));
-//                    }
-//                }
-//                return arrayList;
-//            }
-//        } catch (Exception e) {
-//        }
+        try {
+            ArrayList<Vertex> arrayList = new ArrayList<>();
+            if (direction.equals(Direction.OUT)) {
+                if(labels.length != 0) {
+                    for (String label : labels) {
+                        /* key, value check */
+                        JSONObject jsonObject = new JSONObject().put(key, value);
+                        String query = "SELECT id FROM v WHERE id = (SELECT i FROM e WHERE label = '" + label + "' AND o = '" + id + "');";
+                        ResultSet rs = stmt.executeQuery(query);
+                        while (rs.next()) {
+                            arrayList.add(new PersistentVertex(rs.getString(1), stmt));
+                        }
+                    }
+                }
+                return arrayList;
+            } else if (direction.equals(Direction.IN)) {
+                for (String label : labels) {
+                    /* key, value check */
+                    JSONObject jsonObject = new JSONObject().put(key, value);
+                    String query = "SELECT id FROM v WHERE id = (SELECT o FROM e WHERE label = '" + label + "' AND i = '" + id + "');";
+                    ResultSet rs = stmt.executeQuery(query);
+                    while (rs.next()) {
+                        arrayList.add(new PersistentVertex(rs.getString(1), stmt));
+                    }
+                }
+                return arrayList;
+            } else {
+                throw new IllegalArgumentException("Direction.BOTH is not allowed");
+            }
+        } catch (Exception e) {
+        }
         return null;
     }
 

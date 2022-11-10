@@ -17,7 +17,7 @@ public class UnitTest {
 		String port = "3307";
 
 		Graph g = new PersistentGraph(id,pwd,dbName,"3307");
-		//Graph g = new PersistentGraph(dbID, dbPW, dbName);
+		//Graph g = new InMemoryGraph();
 
 		Vertex v1 = g.addVertex("1");
 		System.out.println("[1] " + v1.getId());
