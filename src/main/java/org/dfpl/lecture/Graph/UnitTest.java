@@ -6,8 +6,10 @@ package org.dfpl.lecture.Graph;
 //import com.tinkerpop.blueprints.revised.Vertex;
 //import org.dfpl.lecture.blueprints.memory.InMemoryGraph;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import org.dfpl.lecture.revised.Direction;
+import org.dfpl.lecture.revised.Edge;
+import org.dfpl.lecture.revised.Graph;
+import org.dfpl.lecture.revised.Vertex;
 
 public class UnitTest {
 	public static void main(String[] args) throws Exception {
@@ -16,7 +18,7 @@ public class UnitTest {
 		String dbName = "testDB1";
 		String port = "3307";
 
-		Graph g = new PersistentGraph(id,pwd,dbName,"3307");
+		Graph g = new PersistentGraph(id,pwd,dbName);
 		//Graph g = new InMemoryGraph();
 
 		Vertex v1 = g.addVertex("1");

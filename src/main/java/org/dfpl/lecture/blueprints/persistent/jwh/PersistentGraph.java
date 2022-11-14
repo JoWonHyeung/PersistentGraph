@@ -1,4 +1,4 @@
-package org.dfpl.lecture.Graph;
+package org.dfpl.lecture.blueprints.persistent.jwh;
 
 import org.dfpl.lecture.revised.Edge;
 import org.dfpl.lecture.revised.Graph;

@@ -1,5 +1,9 @@
 package org.dfpl.lecture.Graph;
 
+import org.dfpl.lecture.revised.Direction;
+import org.dfpl.lecture.revised.Edge;
+import org.dfpl.lecture.revised.Graph;
+import org.dfpl.lecture.revised.Vertex;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -13,29 +17,30 @@ public class SmallDataTest {
 	public static String divTag = "div";
 
 	public static void main(String[] args) throws Exception {
+
 		// 참고: 평가를 위한 데이터셋은 보다 작은 데이터셋을 활용 (예: CollegeMsg.txt, http://snap.stanford.edu/data/index.html)
 		// 참고: 데이터셋 변경 가능
 		String fileName = "C:\\Users\\Jo\\DatabaseProgramming\\src\\main\\java\\org\\dfpl\\lecture\\Graph\\CollegeMsg.txt";
 		String delimiter = "\\s";
 		String dbID = "root";
 		String dbPW = "dnjsgud@12";
-		String dbName = "JWH";
+		String dbName = "team15";
 
 		BufferedReader r = new BufferedReader(new FileReader(fileName));
 
 		//Graph g = new InMemoryGraph();
 		// PersistentGraph의 생성자는 빈 생성자 (id는 root, pw는 1234, db name은 팀 이름으로) 혹은
 		// (String dbID, String dbPW, String dbName) 의 생성자를 가질 수 있음
-		Graph g = new PersistentGraph(dbID, dbPW, dbName,"3307");
+		Graph g = new PersistentGraph(dbID, dbPW, dbName);
 
 		int cnt = 0;
-		while(true){
+		while (true) {
 			String line = r.readLine();
-			if(line == null)
+			if (line == null)
 				break;
 			if (line.startsWith("#"))
 				continue;
-			if(++cnt % 1000 == 0){
+			if (++cnt % 1000 == 0) {
 				System.out.println(cnt + " lines read...");
 			}
 			String[] arr = line.split(delimiter);
@@ -58,11 +63,11 @@ public class SmallDataTest {
 		int maxOutDegree = Integer.MIN_VALUE;
 		String maxOutDegreeID = null;
 		int dummy = 0;
-		for(Vertex v: g.getVertices()){
-			if(++dummy%1000 == 0)
+		for (Vertex v : g.getVertices()) {
+			if (++dummy % 1000 == 0)
 				System.out.print(".");
 			int d = v.getVertices(Direction.OUT).size();
-			if(d > maxOutDegree){
+			if (d > maxOutDegree) {
 				maxOutDegree = d;
 				maxOutDegreeID = v.getId();
 			}
@@ -72,11 +77,11 @@ public class SmallDataTest {
 		int maxInDegree = Integer.MIN_VALUE;
 		String maxInDegreeID = null;
 		dummy = 0;
-		for(Vertex v: g.getVertices()){
-			if(++dummy%1000 == 0)
+		for (Vertex v : g.getVertices()) {
+			if (++dummy % 1000 == 0)
 				System.out.print(".");
 			int d = v.getVertices(Direction.IN).size();
-			if(d > maxInDegree){
+			if (d >= maxInDegree) {
 				maxInDegree = d;
 				maxInDegreeID = v.getId();
 			}
@@ -97,6 +102,7 @@ public class SmallDataTest {
 				.flatMap(v -> v.getVertices(Direction.OUT).stream()).toList().size());
 		System.out.println("[12] " + g.getVertex(maxInDegreeID).getVertices(Direction.IN).stream()
 				.flatMap(v -> v.getVertices(Direction.IN).stream()).toList().size());
+
 		System.out.println("[13] " + g.getVertex(maxOutDegreeID).getVertices(Direction.OUT, isEvenTag, true).stream()
 				.flatMap(v -> v.getVertices(Direction.OUT, isEvenTag, false).stream()).toList().size());
 		System.out.println("[14] " + g.getVertex(maxInDegreeID).getVertices(Direction.IN, isEvenTag, true).stream()
@@ -198,6 +204,36 @@ public class SmallDataTest {
 		}
 		System.out.println("[22] " + min12C);
 		System.out.println("[P6] " + min12);
+
+		long min13 = Long.MAX_VALUE;
+		int min13C = 0;
+		for (int i = 0; i < 5; i++) {
+			long pre = System.nanoTime();
+			min13C = g.getVertex(maxOutDegreeID).getTwoHopVertices(Direction.OUT).size();
+			long elapsedTime = System.nanoTime() - pre;
+			if (elapsedTime < min13) {
+				System.out.println("\t" + min13 + " -> " + elapsedTime);
+				min13 = elapsedTime;
+			}
+		}
+		//  [23] should be same with [21]
+		System.out.println("[23] " + min13C);
+		System.out.println("[P7] " + min13);
+
+		long min14 = Long.MAX_VALUE;
+		int min14C = 0;
+		for (int i = 0; i < 5; i++) {
+			long pre = System.nanoTime();
+			min14C = g.getVertex(maxInDegreeID).getTwoHopVertices(Direction.IN).size();
+			long elapsedTime = System.nanoTime() - pre;
+			if (elapsedTime < min14) {
+				System.out.println("\t" + min14 + " -> " + elapsedTime);
+				min14 = elapsedTime;
+			}
+		}
+		// [24] should be same with [22]
+		System.out.println("[24] " + min14C);
+		System.out.println("[P8] " + min14);
 	}
 
 	@SuppressWarnings("unused")

@@ -1,4 +1,4 @@
-package org.dfpl.lecture.Graph;
+package org.dfpl.lecture.blueprints.persistent.jwh;
 
 import org.dfpl.lecture.revised.Direction;
 import org.dfpl.lecture.revised.Edge;
@@ -6,10 +6,12 @@ import org.dfpl.lecture.revised.Vertex;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.EOFException;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class PersistentVertex implements Vertex {
     private String id;

@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/src/main/TestUnitAnswer" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/org/dfpl/lecture/Graph/CollegeMsg.txt" charset="x-windows-949" />
     <file url="file://$PROJECT_DIR$/src/main/java/org/dfpl/lecture/Graph/facebook_combined.txt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/org/dfpl/lecture/data" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/org/dfpl/lecture/data/CollegeMsg.txt" charset="x-windows-949" />
     <file url="file://$PROJECT_DIR$/src/main/java/org/dfpl/lecture/data/account.xml" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/org/dfpl/lecture/data/depositor.json" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/org/dfpl/lecture/data/loan.txt" charset="UTF-8" />
