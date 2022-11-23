@@ -2,8 +2,7 @@
 [2] 1
 [3] 1
 [4] 1
-id cannot contain '|'
-wrong row position
+[5] id cannot contain '|'
 [6] null
 [7] 2
 [8] 4
@@ -13,10 +12,10 @@ wrong row position
 [12] false
 [13] true
 [14] 1
-[15] 1l2
+[15] 1|l|2
 [16] 1
-inVertex cannot be null
-label cannot contain '|'
+[17] inVertex cannot be null
+[18] label cannot contain '|'
 [19] 1
 [20] 3
 [21] 4
@@ -49,5 +48,3 @@ label cannot contain '|'
 [48] false
 [49] Direction.BOTH is not allowed
 [50] Direction.BOTH is not allowed
-
-Process finished with exit code 0

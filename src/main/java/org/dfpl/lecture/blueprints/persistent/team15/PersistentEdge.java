@@ -142,7 +142,7 @@ public class PersistentEdge implements Edge {
     }
 
     public String getEdgeId(Vertex outv, String label, Vertex inv) {
-        return outv.getId() + label + inv.getId();
+        return outv.getId() + "|" + label + "|" + inv.getId();
     }
 
     public static boolean isInt(String strNum) {

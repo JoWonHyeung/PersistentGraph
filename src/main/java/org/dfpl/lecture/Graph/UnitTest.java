@@ -55,6 +55,7 @@ public class UnitTest {
 		} catch (NullPointerException e) {
 			System.out.println("[17] " + e.getMessage());
 		}
+
 		try {
 			g.addEdge(v1, v2, "l|l");
 		} catch (IllegalArgumentException e) {
