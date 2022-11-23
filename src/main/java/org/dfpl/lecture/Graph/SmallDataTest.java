@@ -1,5 +1,6 @@
 package org.dfpl.lecture.Graph;
 
+import org.dfpl.lecture.blueprints.persistent.team15.PersistentGraph;
 import org.dfpl.lecture.revised.Direction;
 import org.dfpl.lecture.revised.Edge;
 import org.dfpl.lecture.revised.Graph;
@@ -20,7 +21,7 @@ public class SmallDataTest {
 
 		// 참고: 평가를 위한 데이터셋은 보다 작은 데이터셋을 활용 (예: CollegeMsg.txt, http://snap.stanford.edu/data/index.html)
 		// 참고: 데이터셋 변경 가능
-		String fileName = "C:\\Users\\Jo\\DatabaseProgramming\\src\\main\\java\\org\\dfpl\\lecture\\Graph\\CollegeMsg.txt";
+		String fileName = "C:\\Users\\Jo\\DatabaseProgramming\\src\\main\\java\\org\\dfpl\\lecture\\data\\CollegeMsg.txt";
 		String delimiter = "\\s";
 		String dbID = "root";
 		String dbPW = "dnjsgud@12";
@@ -28,7 +29,7 @@ public class SmallDataTest {
 
 		BufferedReader r = new BufferedReader(new FileReader(fileName));
 
-		//Graph g = new InMemoryGraph();
+		// Graph g = new InMemoryGraph();
 		// PersistentGraph의 생성자는 빈 생성자 (id는 root, pw는 1234, db name은 팀 이름으로) 혹은
 		// (String dbID, String dbPW, String dbName) 의 생성자를 가질 수 있음
 		Graph g = new PersistentGraph(dbID, dbPW, dbName);

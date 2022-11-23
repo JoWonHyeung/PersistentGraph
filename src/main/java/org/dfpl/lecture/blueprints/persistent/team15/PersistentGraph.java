@@ -1,4 +1,4 @@
-package org.dfpl.lecture.blueprints.persistent.jwh;
+package org.dfpl.lecture.blueprints.persistent.team15;
 
 import org.dfpl.lecture.revised.Edge;
 import org.dfpl.lecture.revised.Graph;
@@ -28,8 +28,8 @@ public class PersistentGraph implements Graph {
         /* Use database */
         stmt.executeUpdate("USE " + dbName + ";");
         /* table create*/
-        stmt.executeUpdate("CREATE OR REPLACE TABLE e(o VARCHAR(10),i VARCHAR(10),label VARCHAR(50),id VARCHAR(70) UNIQUE,properties JSON);");
-        stmt.executeUpdate("CREATE OR REPLACE TABLE v(id VARCHAR(50) UNIQUE,properties JSON);");
+        stmt.executeUpdate("CREATE OR REPLACE TABLE e(o VARCHAR(10),i VARCHAR(10),label VARCHAR(50),id VARCHAR(70) PRIMARY KEY,properties JSON);");
+        stmt.executeUpdate("CREATE OR REPLACE TABLE v(id VARCHAR(50) PRIMARY KEY,properties JSON);");
     }
 
     @Override
@@ -204,7 +204,12 @@ public class PersistentGraph implements Graph {
     public Collection<Edge> getEdges(String key, Object value) {
         try {
             ArrayList<Edge> arrayList = new ArrayList<>();
-            String query = "SELECT o, i, label, JSON_CONTAINS(properties,JSON_OBJECT('" + key + "','" + value + "')) FROM e;";
+            String query = "";
+            if(value.equals(false) | value.equals(true)){
+                query = "SELECT o, i, label, JSON_CONTAINS(properties,JSON_OBJECT('" + key + "'," + value + ")) FROM e;";
+            }else{
+                query = "SELECT o, i, label, JSON_CONTAINS(properties,JSON_OBJECT('" + key + "','" + value + "')) FROM e;";
+            }
             ResultSet rs = stmt.executeQuery(query);
             while(rs.next()){
                 if(rs.getString(4).equals("1")){

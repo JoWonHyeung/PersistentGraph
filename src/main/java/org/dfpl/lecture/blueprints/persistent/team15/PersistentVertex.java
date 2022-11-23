@@ -1,4 +1,4 @@
-package org.dfpl.lecture.blueprints.persistent.jwh;
+package org.dfpl.lecture.blueprints.persistent.team15;
 
 import org.dfpl.lecture.revised.Direction;
 import org.dfpl.lecture.revised.Edge;
@@ -241,7 +241,12 @@ public class PersistentVertex implements Vertex {
                         return arrayList;
                     }
                 }
-                String query = "SELECT i,JSON_CONTAINS(properties,JSON_OBJECT('" + key + "'," + value + ")) FROM e WHERE o = '" + id + "';";
+                String query = "";
+                if(value.equals(false) | value.equals(true)){
+                    query = "SELECT i,JSON_CONTAINS(properties,JSON_OBJECT('" + key + "'," + value + ")) FROM e WHERE o = '" + id + "';";
+                }else{
+                    query = "SELECT i,JSON_CONTAINS(properties,JSON_OBJECT('" + key + "','" + value + "')) FROM e WHERE o = '" + id + "';";
+                }
                 ResultSet rs = stmt.executeQuery(query);
                 while (rs.next()) {
                     if (!rs.getString(2).equals("1")) {
@@ -252,7 +257,7 @@ public class PersistentVertex implements Vertex {
             } else if (direction.equals(Direction.IN)) {
                 if (labels.length != 0) {
                     for (String label : labels) {
-                        String query = "SELECT i,JSON_CONTAINS(properties,JSON_OBJECT('" + key + "'," + value + ")) FROM e WHERE o = '" + id + "' AND id ='" + label + "';";
+                        String query = "SELECT i,JSON_CONTAINS(properties,JSON_OBJECT('" + key + "','" + value + "')) FROM e WHERE o = '" + id + "' AND id ='" + label + "';";
                         ResultSet rs = stmt.executeQuery(query);
                         while (rs.next()) {
                             if (!rs.getString(2).equals("1")) {
@@ -262,7 +267,12 @@ public class PersistentVertex implements Vertex {
                         return arrayList;
                     }
                 }
-                String query = "SELECT o,JSON_CONTAINS(properties,JSON_OBJECT('" + key + "'," + value + ")) FROM e WHERE i = '" + id + "';";
+                String query = "";
+                if(value.equals(false) | value.equals(true)){
+                    query = "SELECT o,JSON_CONTAINS(properties,JSON_OBJECT('" + key + "'," + value + ")) FROM e WHERE i = '" + id + "';";
+                }else{
+                    query = "SELECT o,JSON_CONTAINS(properties,JSON_OBJECT('" + key + "','" + value + "')) FROM e WHERE i = '" + id + "';";
+                }
                 ResultSet rs = stmt.executeQuery(query);
                 while (rs.next()) {
                     if (!rs.getString(2).equals("1")) {

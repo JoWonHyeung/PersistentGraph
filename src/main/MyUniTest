@@ -49,3 +49,5 @@ label cannot contain '|'
 [48] false
 [49] Direction.BOTH is not allowed
 [50] Direction.BOTH is not allowed
+
+Process finished with exit code 0
